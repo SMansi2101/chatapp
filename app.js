@@ -53,7 +53,14 @@ usp.on('connection', async function (socket) {
           {sender_id:data.receiver_id,receiver_id:data.sender_id}
      ]});
      socket.emit('loadChats',{chats:chats});
-  })
+  });
+  socket.on('chatDeleted',function(id){
+      socket.broadcast.emit('chatMessageDeleted',id);
+  });
+
+  socket.on('chatEdited',function(data){
+    socket.broadcast.emit('chatMessageEdited',data);
+});
 });
 
 // Use session middleware

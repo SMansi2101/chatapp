@@ -32,6 +32,8 @@ router.get('/logout',auth.isLogin,userController.logout);
 
 router.get('/dashboard',auth.isLogin,userController.loadDashboard);
 router.post('/save-chat',userController.saveChat);
+router.post('/delete-chat',userController.deleteChat);
+router.post('/edit-chat',userController.editChat);
 
 router.get('*',function(req,res){
   res.redirect('/');
