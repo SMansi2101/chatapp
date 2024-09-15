@@ -6,7 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LinkUp - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js" integrity="sha512-VJ6+sp2E5rFQk05caiXXzQd1wBABpjEj1r5kMiLmGAAgwPItw1YpqsCCBtq8Yr1x6C49/mTpRdXtq8O2RcZhlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js"
+        integrity="sha512-VJ6+sp2E5rFQk05caiXXzQd1wBABpjEj1r5kMiLmGAAgwPItw1YpqsCCBtq8Yr1x6C49/mTpRdXtq8O2RcZhlQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .sidebar {
@@ -34,11 +36,41 @@
         .chat-section {
             display: none;
         }
-        .online-status{
+
+        .online-status {
             color: green;
         }
-        .offline-status{
+
+        .offline-status {
             color: red;
+        }
+
+        .current-user-chat {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 60%;
+            word-wrap: break-word;
+            align-self: flex-end;
+            /* Align to the right */
+            text-align: right;
+            /* Align text to the right */
+            margin-left: auto;
+            /* Push to the right */
+        }
+
+        .distance-user-chat {
+            background-color: #ffffff;
+            color: black;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 60%;
+            word-wrap: break-word;
+            align-self: flex-start;
+            /* Align to the left */
+            margin-right: auto;
+            /* Push to the left */
         }
     </style>
 </head>
@@ -68,29 +100,21 @@
             <!-- User List Section -->
             <div class="col-span-3 bg-gray-100 p-4 rounded-lg shadow">
                 <ul id="userList">
-                    <% if (users.length > 0) { %>
-                        <% for (let i = 0; i < users.length; i++) { %>
-                            <li class="user-list-item rounded flex items-center"  data-id= "<%= users[i]['_id']%>" onclick="showChatSection()">
-                                <img src="<%= users[i]['image'] %>"  class="w-12 h-12 rounded-full mr-4">
+                    <% if (users.length> 0) { %>
+                        <% for (let i=0; i < users.length; i++) { %>
+                            <li class="user-list-item rounded flex items-center" data-id="<%= users[i]['_id']%>">
+                                <img src="<%= users[i]['image'] %>" class="w-12 h-12 rounded-full mr-4">
                                 <%= users[i]['name'] %>
-
-                                <%
-                                   if(users[i]['is_online'] == 1){
-                                    %>
-                                     <sup class="online-status" id="<%= users[i]['_id']%>-status">Online</sup>
-                                    <%
-                                   }
-                                   else{
-                                    %>
-                                    <sup class="offline-status" id="<%= users[i]['_id']%>-status">Offline</sup>
-                                   <%
-                                   }
-                                %>
+                                    <% if(users[i]['is_online']==1){ %>
+                                        <sup class="online-status" id="<%= users[i]['_id']%>-status">Online</sup>
+                                        <% } else{ %>
+                                            <sup class="offline-status" id="<%= users[i]['_id']%>-status">Offline</sup>
+                                            <% } %>
                             </li>
-                        <% } %>
-                    <% } else { %>
-                        <li class="text-gray-600">No Contacts.</li>
-                    <% } %>
+                            <% } %>
+                                <% } else { %>
+                                    <li class="text-gray-600">No Contacts.</li>
+                                    <% } %>
                 </ul>
             </div>
 
@@ -100,14 +124,18 @@
 
                 <div class="chat-section flex flex-col flex-1 p-4">
                     <!-- Chat messages container -->
-                    <div class="chat-container flex-1 overflow-y-auto p-4 bg-gray-100 rounded-lg">
-                        <!-- Chat messages will be dynamically inserted here -->
+                    <div class="chat-container flex flex-col flex-1 overflow-y-auto p-4 bg-gray-200 rounded-lg space-y-2"
+                        id="chat-container">
+                        <!-- Chat messages will appear here -->
                     </div>
 
                     <!-- Message input form -->
-                    <form action="" id="chat-form" class="mt-4 flex-shrink-0 flex items-center space-x-4 bg-gray-50 p-4 rounded-lg">
-                        <input type="text" name="message" id="message" placeholder="Enter Message" class="flex-1 border rounded-lg p-2 focus:outline-none" required>
-                        <button type="submit" class="btn btn-primary bg-blue-500 text-white px-4 py-2 rounded-lg">Send</button>
+                    <form action="" id="chat-form"
+                        class="mt-4 flex-shrink-0 flex items-center space-x-4 bg-gray-50 p-4 rounded-lg">
+                        <input type="text" name="message" id="message" placeholder="Enter Message"
+                            class="flex-1 border rounded-lg p-2 focus:outline-none" required>
+                        <button type="submit"
+                            class="btn btn-primary bg-blue-500 text-white px-4 py-2 rounded-lg">Send</button>
                     </form>
                 </div>
             </div>
@@ -116,33 +144,108 @@
 
     <script>
         const sender_id = '<%= user._id%>';
-        const socket = io('/user-namespace',{
-            auth:{
-                token:'<%= user._id%>'
+        let receiver_id = null;
+        const socket = io('/user-namespace', {
+            auth: {
+                token: '<%= user._id%>'
             }
         });
-        // JavaScript to show the chat section when a user is clicked
-        function showChatSection() {
-            var userId = $(this).attr('data-id');
-            receiver_id = userId;
+
+        // Bind click event to user list items
+        $('#userList').on('click', '.user-list-item', function () {
+            var userId = $(this).attr('data-id'); // Get the clicked user's data-id
+            receiver_id = userId; // Set receiver_id
             document.querySelector('.start-section').style.display = 'none'; // Hide the start section
             document.querySelector('.chat-section').style.display = 'flex'; // Show the chat section
+
+            socket.emit('existsChat',{sender_id:sender_id, receiver_id:receiver_id});
+        });
+
+        // Update user online status
+        socket.on('getOnlineStatus', function (data) {
+            $('#' + data.user_id + '-status').text('Online');
+            $('#' + data.user_id + '-status').removeClass('offline-status');
+            $('#' + data.user_id + '-status').addClass('online-status');
+        });
+
+        // Update user offline status
+        socket.on('getOfflineStatus', function (data) {
+            $('#' + data.user_id + '-status').text('Offline');
+            $('#' + data.user_id + '-status').removeClass('online-status');
+            $('#' + data.user_id + '-status').addClass('offline-status');
+        });
+
+        // Chat save for user
+        $('#chat-form').submit(function (event) {
+            event.preventDefault();
+
+            const message = $('#message').val();
+
+            $.ajax({
+                url: '/save-chat',
+                type: 'POST',
+                data: { sender_id: sender_id, receiver_id: receiver_id, message: message },
+                success: function (response) {
+                    if (response.success) {
+                        $('#message').val('');
+                        let chat = response.data.message;
+                        let html = `
+                            <div class="current-user-chat">
+                                <h5>`+ chat + `</h5>
+                            </div>
+                        `;
+                        $('#chat-container').append(html);
+                        socket.emit('newChat', response.data);
+
+                        ScrollChat();
+                    } else {
+                        alert(response.msg);
+                    }
+                }
+            });
+        });
+        socket.on('loadNewChat', function (data) {
+            if(sender_id == data.receiver_id && receiver_id == data.sender_id){
+                let html = `
+                           <div class="distance-user-chat">
+                                 <h5>`+ data.message + `</h5>
+                            </div>
+                         `;
+                $('#chat-container').append(html);
+                ScrollChat();
+            }
+        });
+
+        //load old chats
+        socket.on('loadChats',function(data){
+            $('#chat-container').html('');
+            const chats = data.chats;
+            let html = '';
+
+            for(let x=0 ; x<chats.length; x++){
+                let addClass = '';
+                if(chats[x]['sender_id']==sender_id){
+                    addClass='current-user-chat';
+                }
+                else{
+                    addClass='distance-user-chat'
+                }
+                html +=`
+                    <div class="`+addClass+`">
+                        <h5>`+ chats[x]['message'] + `</h5>
+                    </div>
+                `;
+            }
+            $('#chat-container').append(html);
+
+            ScrollChat();
+        });
+
+        function ScrollChat(){
+            $('#chat-container').animate({
+                scrollTop:$('#chat-container').offset().top + $('#chat-container')[0].scrollHeight
+            },0);
         }
-     //update user online status
-    socket.on('getOnlineStatus',function(data){
-        $('#'+data.user_id+'-status').text('Online');
-        $('#'+data.user_id+'-status').removeClass('offline-status');
-        $('#'+data.user_id+'-status').addClass('online-status');
-
-    });
-
-    //update user oline status
-    socket.on('getOfflineStatus',function(data){
-        $('#'+data.user_id+'-status').text('Offline');
-        $('#'+data.user_id+'-status').removeClass('online-status');
-        $('#'+data.user_id+'-status').addClass('offline-status');
-
-    });
     </script>
 </body>
 

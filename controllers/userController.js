@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const Chat = require('../models/chatModel');
 const User = require('../models/userModel');
 
 const registerLoad = async function (req, res) {
@@ -88,6 +89,21 @@ const loadDashboard = async function (req, res) {
     }
 };
 
+const saveChat = async function(req,res){
+    try {
+        const chat = new Chat({
+            sender_id:req.body.sender_id,
+            receiver_id:req.body.receiver_id,
+            message:req.body.message
+        });
+
+        const newChat = await chat.save();
+        res.status(200).send({success:true,msg:'Chat inserted!',data:newChat});
+    } catch (error) {
+        res.status(400).send({success:false,msg:error.message});
+    }
+}
+
 module.exports = {
     registerLoad,
     register,
@@ -95,4 +111,5 @@ module.exports = {
     login,
     logout,
     loadDashboard,
+    saveChat,
 };

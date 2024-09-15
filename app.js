@@ -6,6 +6,7 @@ const connectDb = require('./config/dbConnnection');
 const userRoutes = require('./routes/userRoutes');
 const path = require('path');
 const User = require('./models/userModel');
+const Chat = require('./models/chatModel');
 
 // Create an Express app
 const app = express();
@@ -40,6 +41,19 @@ usp.on('connection', async function (socket) {
     //broadcast userid of user
     socket.broadcast.emit('getOfflineStatus', { user_id: userId });
   });
+  //chat implementation
+  socket.on('newChat',function(data){
+    socket.broadcast.emit('loadNewChat',data);
+  });
+
+  //load old chats
+  socket.on('existsChat',async function(data){
+     const chats = await Chat.find({ $or:[
+          {sender_id:data.sender_id,receiver_id:data.receiver_id},
+          {sender_id:data.receiver_id,receiver_id:data.sender_id}
+     ]});
+     socket.emit('loadChats',{chats:chats});
+  })
 });
 
 // Use session middleware
