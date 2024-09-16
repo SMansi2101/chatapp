@@ -1,202 +1,104 @@
 <%- include('partials/header') %>
-    <script>
-        const sender_id = '<%= user._id%>';
-        let receiver_id = null;
-        const socket = io('/user-namespace', {
-            auth: {
-                token: '<%= user._id%>'
-            }
-        });
 
-        // Bind click event to user list items
-        $('#userList').on('click', '.user-list-item', function () {
-            var userId = $(this).attr('data-id'); // Get the clicked user's data-id
-            receiver_id = userId; // Set receiver_id
-            document.querySelector('.start-section').style.display = 'none'; // Hide the start section
-            document.querySelector('.chat-section').style.display = 'flex'; // Show the chat section
+    <!-- Main Content -->
+    <div class="flex-1 p-6">
+        <h1 class="text-2xl font-bold mb-4">Welcome to chat app, <%= user.name %>!</h1>
+        <div class="grid grid-cols-12 gap-6">
+            <!-- User List Section -->
+            <div class="col-span-3 bg-gray-100 p-4 rounded-lg shadow">
+                <ul id="userList">
+                    <% if (users.length> 0) { %>
+                        <% for (let i=0; i < users.length; i++) { %>
+                            <li class="user-list-item rounded flex items-center" data-id="<%= users[i]['_id']%>">
+                                <img src="<%= users[i]['image'] %>" class="w-12 h-12 rounded-full mr-4">
+                                <%= users[i]['name'] %>
+                                    <% if(users[i]['is_online']==1){ %>
+                                        <sup class="online-status" id="<%= users[i]['_id']%>-status">Online</sup>
+                                        <% } else{ %>
+                                            <sup class="offline-status" id="<%= users[i]['_id']%>-status">Offline</sup>
+                                            <% } %>
+                            </li>
+                            <% } %>
+                                <% } else { %>
+                                    <li class="text-gray-600">No Contacts.</li>
+                                    <% } %>
+                </ul>
+            </div>
 
-            socket.emit('existsChat', { sender_id: sender_id, receiver_id: receiver_id });
-        });
+            <!-- Chat Section -->
+            <div class="col-span-9 flex flex-col bg-white rounded-lg shadow h-[calc(100vh-96px)]">
+                <h3 class="start-section p-4">Click to start the chat</h3>
 
-        // Update user online status
-        socket.on('getOnlineStatus', function (data) {
-            $('#' + data.user_id + '-status').text('Online');
-            $('#' + data.user_id + '-status').removeClass('offline-status');
-            $('#' + data.user_id + '-status').addClass('online-status');
-        });
-
-        // Update user offline status
-        socket.on('getOfflineStatus', function (data) {
-            $('#' + data.user_id + '-status').text('Offline');
-            $('#' + data.user_id + '-status').removeClass('online-status');
-            $('#' + data.user_id + '-status').addClass('offline-status');
-        });
-
-        // Chat save for user
-        $('#chat-form').submit(function (event) {
-            event.preventDefault();
-
-            const message = $('#message').val();
-
-            $.ajax({
-                url: '/save-chat',
-                type: 'POST',
-                data: { sender_id: sender_id, receiver_id: receiver_id, message: message },
-                success: function (response) {
-                    if (response.success) {
-                        $('#message').val('');
-                        let chat = response.data.message;
-                        let html = `
-                            <div class="current-user-chat"id="`+ response.data._id + `">
-                                <h5><span>`+ chat + `</span>
-                                    <i class="fa-solid fa-trash-can" data-id="` + response.data._id + `" data-toggle="modal" data-target="#deleteChatModal"></i>
-                                    <p class="editbutton" data-id="` + response.data._id + `" data-msg="` + chat + `" data-toggle="modal" data-target="#editChatModal">Edit</p>
-                                </h5>
-                            </div>
-                        `;
-                        $('#chat-container').append(html);
-                        socket.emit('newChat', response.data);
-
-                        ScrollChat();
-                    } else {
-                        alert(response.msg);
-                    }
-                }
-            });
-        });
-        socket.on('loadNewChat', function (data) {
-            if (sender_id == data.receiver_id && receiver_id == data.sender_id) {
-                let html = `
-                           <div class="distance-user-chat" id='`+ data._id + `'>
-                                 <h5>`+ data.message + `</h5>
-                            </div>
-                         `;
-                $('#chat-container').append(html);
-                ScrollChat();
-            }
-        });
-
-        //load old chats
-        socket.on('loadChats', function (data) {
-            $('#chat-container').html('');
-            const chats = data.chats;
-            let html = '';
-
-            for (let x = 0; x < chats.length; x++) {
-                let addClass = '';
-                if (chats[x]['sender_id'] == sender_id) {
-                    addClass = 'current-user-chat';
-                }
-                else {
-                    addClass = 'distance-user-chat'
-                }
-                html += ` 
-                    <div class="`+ addClass + `" id='` + chats[x]['_id'] + `'>
-                        <h5><span>`+ chats[x]['message'] + `</span>`;
-                if (chats[x]['sender_id'] == sender_id) {
-                    html += `<i class="fa-solid fa-trash-can" data-id="` + chats[x]['_id'] + `" data-toggle="modal" data-target="#deleteChatModal"></i>
-                    <p class="editbutton" data-id="` + chats[x]['_id'] + `" data-msg="` + chats[x]['message'] + `" data-toggle="modal" data-target="#editChatModal">Edit</p>`
-
-                }
-                html += `       
-                    </h5>
+                <div class="chat-section flex flex-col flex-1 p-4">
+                    <!-- Chat messages container -->
+                    <div class="chat-container flex flex-col flex-1 overflow-y-auto p-4 bg-gray-200 rounded-lg space-y-2"
+                        id="chat-container">
+                        <!-- Chat messages will appear here -->
                     </div>
-                `;
-            }
-            $('#chat-container').append(html);
 
-            ScrollChat();
-        });
+                    <!-- Message input form -->
+                    <form action="" id="chat-form"
+                        class="mt-4 flex-shrink-0 flex items-center space-x-4 bg-gray-50 p-4 rounded-lg">
+                        <input type="text" name="message" id="message" placeholder="Enter Message"
+                            class="flex-1 border rounded-lg p-2 focus:outline-none" required>
+                        <button type="submit"
+                            class="btn btn-primary bg-blue-500 text-white px-4 py-2 rounded-lg">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- -->
+    <!-- Modal -->
+    <div class="modal fade" id="deleteChatModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">LinkUp</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="delete-chat-form">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="delete-message-id">
+                        <p>Delete message?</p>
+                        <p><b id="delete-message"></b></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-        function ScrollChat() {
-            $('#chat-container').animate({
-                scrollTop: $('#chat-container').offset().top + $('#chat-container')[0].scrollHeight
-            }, 0);
-        };
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editChatModal" tabindex="-1" role="dialog" aria-labelledby="editModalCenterTitle"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Message</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="edit-chat-form">
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="edit-message-id">
+                        <input id="edit-message" name="message" placeholder="Enter message" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Edit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
-        $(document).on('contextmenu', '.current-user-chat', function (event) {
-            event.preventDefault();
-            // Hide all trash icons and edit buttons first
-            $('.fa-trash-can, .editbutton').hide();
-
-            // Show the trash icon and edit button for the specific message that was right-clicked
-            $(this).find('.fa-trash-can, .editbutton').show();
-        });
-
-
-        $(document).on('click', '.fa-trash-can', function () {
-            let msg = $(this).parent().text();
-            let messageId = $(this).attr('data-id');
-
-            $('#delete-message').text(msg); // Assign the message text to the modal
-            $('#delete-message-id').val(messageId); // Assign the message ID to the modal hidden input
-        });
-
-
-        $('#delete-chat-form').submit(function (event) {
-            event.preventDefault();
-
-            const id = $('#delete-message-id').val();
-
-            $.ajax({
-                url: '/delete-chat',
-                type: 'POST',
-                data: { id: id },
-                success: function (res) {
-                    if (res.success === true) {
-                        $('#' + id).remove();
-                        $('#deleteChatModal').modal('hide');
-                        socket.emit('chatDeleted', id);
-                    } else {
-                        alert(res.msg);
-                    }
-                }
-            });
-        });
-        socket.on('chatMessageDeleted', function (id) {
-            $('#' + id).remove();
-        });
-
-        //update user chat functionality    
-        $(document).on('click', '.editbutton', function () {
-            $('#edit-message-id').val($(this).attr('data-id'));
-            $('#edit-message').val($(this).attr('data-msg'));
-        });
-
-        // When any modal is closed, hide the delete and edit icons
-        $('.modal').on('hidden.bs.modal', function () {
-            $('.fa-trash-can, .editbutton').hide();  // Hide all trash and edit buttons when the modal is closed
-        });
-
-        $('#edit-chat-form').submit(function (event) {
-            event.preventDefault();
-
-            const id = $('#edit-message-id').val();
-            const msg = $('#edit-message').val();
-
-            $.ajax({
-                url: '/edit-chat',
-                type: 'POST',
-                data: { id: id, message: msg },
-                success: function (res) {
-                    if (res.success === true) {
-                        $('#editChatModal').modal('hide');
-                        $('#' + id).find('span').text(msg)
-                        $('#' + id).find('.editbutton').attr('data-msg', msg);
-                        socket.emit('chatEdited', { id: id, message: msg });
-                    } else {
-                        alert(res.msg);
-                    }
-                }
-            });
-        });
-
-        socket.on('chatMessageEdited', function (data) {
-            $('#' + data.id).find('span').text(data.message);
-        })
-
-    </script>
-
-
-    <%- include('partials/footer') %>
+<%- include('partials/footer') %>

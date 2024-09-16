@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const Chat = require('../models/chatModel');
 const User = require('../models/userModel');
+const Group = require('../models/groupModel')
 
 const registerLoad = async function (req, res) {
     try {
@@ -52,6 +53,7 @@ const login = async function (req, res) {
 
             if (passwordMatch) {
                 req.session.user = userData;
+                res.cookie(`user`,JSON.stringify(userData));
                 return res.redirect('/dashboard');
             } else {
                 return res.render('login', { message: "Email or Password is incorrect!" });
@@ -68,6 +70,7 @@ const login = async function (req, res) {
 
 
 const logout = (req, res) => {
+    res.clearCookie('user');
     req.session.destroy((err) => {
         if (err) {
             console.error("Failed to destroy session during logout:", err);
@@ -130,6 +133,45 @@ const editChat = async function(req,res){
     }
 };
 
+const loadGroups = async function (req, res) {
+    try {
+    const groups = await Group.find({creator_id:req.session.user._id});
+        res.render('group',{groups:groups});
+
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const createGroups = async function (req, res) {
+    try {
+        const group = new Group({
+            creator_id:req.session.user._id,
+            name:req.body.name,
+            image:'images/' + req.file.filename,
+            limit: req.body.limit
+        });
+
+        await group.save();
+        const groups = await Group.find({creator_id:req.session.user._id});
+        res.render('group',{message:req.body.name+' Group Created Successfully',groups:groups});
+
+    } catch (error) {
+        console.log(error.message);
+    }
+};
+
+const addMember = async function(req,res){
+    try {
+
+       const users = await User.find({_id:{$nin:[req.session.user._id]}});
+        res.status(200).send({success:true ,  data:users});
+        
+    } catch (error) {
+        res.status(400).send({success:false,msg:error.message});
+    }
+};
+
 module.exports = {
     registerLoad,
     register,
@@ -140,4 +182,7 @@ module.exports = {
     saveChat,
     deleteChat,
     editChat,
+    loadGroups,
+    createGroups,
+    addMember,
 };

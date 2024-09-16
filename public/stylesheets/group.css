@@ -1,0 +1,146 @@
+.message-success {
+    color: green;
+    font-weight: bold;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid green;
+    border-radius: 5px;
+    background-color: #e6f9e6;
+}
+
+.modal-body input[type="text"],
+.modal-body input[type="number"] {
+    margin-bottom: 15px;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    border-top: 1px solid #e5e5e5;
+    padding: 15px;
+}
+
+/* Modal title styling */
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.modal-header .close {
+    font-size: 1.5rem;
+}
+
+/* Adjust form elements layout */
+.modal-label {
+    font-weight: 600;
+    margin-bottom: 5px;
+    display: block;
+    text-align: left;
+}
+
+.modal-body .form-group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.modal-body input.form-control, 
+.modal-body input.form-control-file {
+    width: 100%;
+}
+
+/* More spacing and alignment */
+.modal-body input.form-control {
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.modal-footer {
+    justify-content: space-between;
+}
+
+.modal-footer button {
+    padding: 8px 20px;
+    font-size: 1rem;
+}
+.cursor-pointer{
+    cursor: pointer;
+}
+/* Styling for the modal */
+.modal-dialog {
+    max-width: 600px; /* Adjust the modal width */
+}
+
+.modal-content {
+    border-radius: 10px;
+}
+
+.modal-header {
+    background-color: #007bff;
+    color: white;
+    border-bottom: 1px solid #007bff;
+}
+
+.modal-title {
+    font-weight: bold;
+}
+
+.modal-footer {
+    border-top: none;
+}
+
+/* Style for table */
+.add-member-table {
+    width: 100%;
+}
+
+.add-member-table thead {
+    background-color: #f8f9fa;
+}
+
+.add-member-table th, .add-member-table td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.add-member-table th {
+    font-weight: bold;
+}
+
+.add-member-table td input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}
+
+/* Add a max height to the modal body for scrolling */
+.modal-body {
+    max-height: 300px; /* Adjust the height as needed */
+    overflow-y: auto;
+}
+
+/* Add scrollbar customization */
+.modal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+    background-color: #007bff;
+    border-radius: 5px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+}
+
+/* Button hover effects */
+.btn-primary:hover {
+    background-color: #0056b3;
+}
+
+.btn-secondary:hover {
+    background-color: #5a6268;
+}

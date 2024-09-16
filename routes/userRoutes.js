@@ -34,6 +34,10 @@ router.get('/dashboard',auth.isLogin,userController.loadDashboard);
 router.post('/save-chat',userController.saveChat);
 router.post('/delete-chat',userController.deleteChat);
 router.post('/edit-chat',userController.editChat);
+router.get('/group',auth.isLogin,userController.loadGroups);
+router.post('/group',upload.single('image'),auth.isLogin,userController.createGroups);
+router.post('/add-member',auth.isLogin,userController.addMember);
+
 
 router.get('*',function(req,res){
   res.redirect('/');
