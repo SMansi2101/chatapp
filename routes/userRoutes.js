@@ -37,6 +37,12 @@ router.post('/edit-chat',userController.editChat);
 router.get('/group',auth.isLogin,userController.loadGroups);
 router.post('/group',upload.single('image'),auth.isLogin,userController.createGroups);
 router.post('/add-member',auth.isLogin,userController.addMember);
+router.get('/forgot-password',userController.LoadforgotPassword);
+router.post('/forgot-password',userController.forgotPassword);
+router.get('/reset-password/:token',userController.loadresetPassword);
+router.post('/reset-password/:token',userController.resetPassword);
+
+
 
 
 router.get('*',function(req,res){
