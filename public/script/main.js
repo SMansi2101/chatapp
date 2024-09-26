@@ -212,7 +212,7 @@ socket.on('chatMessageEdited', function (data) {
 $('.addMember').click(function(){
     var id  = $(this).attr('data-id');
     var limit  = $(this).attr('data-limit');
-
+     
     $('#group_id').val(id);
     $('#limit').val(limit);
 
@@ -221,17 +221,19 @@ $('.addMember').click(function(){
         type:'POST',
         data:{group_id:id},
         success:function(res){
+        
              if(res.success == true){
                 let users = res.data;
                 let html = '';
 
-                for(let i=0 ;i< users.length;i++){
+                for(let i=0; i < users.length; i++){
+                  let isMemberOfGroup = users[i]['member'].length > 0?true:false;
                 html +=`
                    <tr>
                       <td>
-                        <input type="checkbox" name="members[]" value="`+users[i]['_id']+`"/>
+                       <input type="checkbox" `+(isMemberOfGroup?'checked':'')+` name="members[]" value="${users[i]['_id']}" />
                       </td>
-                      <td>`+users[i]['name']+`</td>
+                      <td>${users[i]['name']}</td>
                    </tr>
                 `;
                 }
@@ -243,3 +245,51 @@ $('.addMember').click(function(){
         }
     });
 });
+//save member form submit code
+
+$('#add-member-form').submit(function(event){
+    event.preventDefault();
+
+    var formData = $(this).serialize();
+
+    $.ajax({
+        url:"/save-member",
+        type:"POST",
+        data:formData,
+        success:function(res){
+          if(res.success){
+            alert(res.msg);
+            $('#addMemberModal').modal('hide');
+            $('#add-member-form')[0].reset();
+          }
+          else{
+            alert(res.msg);
+          }
+        }
+    });
+});
+
+//delete chat group
+
+$('.deleteGroup').click(function(){
+    $('#delete_group_id').val($(this).attr('data-id'));
+    $('#delete_group_name').text($(this).attr('data-name'));
+});
+
+$('#deleteGroupForm').submit(function(event){
+    event.preventDefault();
+
+    var formData = $(this).serialize();
+
+    $.ajax({
+        url:"/delete-chat-group",
+        type:'POST',
+        data:formData,
+        success:function(res){
+            alert(res.msg);
+            if(res.success){
+                location.reload();
+            }
+        }
+    });
+})

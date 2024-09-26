@@ -2,9 +2,11 @@ const bcrypt = require('bcryptjs');
 const Chat = require('../models/chatModel');
 const User = require('../models/userModel');
 const Group = require('../models/groupModel');
+const Member = require('../models/memberModel');
 const randomstring = require('randomstring');
 const nodemailer = require('nodemailer')
 const config = require('../config/config');
+const mongoose = require('mongoose');
 
 const registerLoad = async function (req, res) {
     try {
@@ -152,7 +154,6 @@ const createGroups = async function (req, res) {
             creator_id: req.session.user._id,
             name: req.body.name,
             image: 'images/' + req.file.filename,
-            limit: req.body.limit
         });
 
         await group.save();
@@ -166,9 +167,77 @@ const createGroups = async function (req, res) {
 
 const addMember = async function (req, res) {
     try {
+        const { group_id } = req.body;
 
-        const users = await User.find({ _id: { $nin: [req.session.user._id] } });
+        // Convert group_id to an ObjectId using `new`
+        const objectIdGroupId = new mongoose.Types.ObjectId(group_id);
+
+        // Run the aggregation query
+        const users = await User.aggregate([
+            {
+                $lookup: {
+                    from: 'members',
+                    localField: "_id",
+                    foreignField: "user_id",
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$group_id", objectIdGroupId] }
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    as: 'member'
+                }
+            },
+            {
+                $match: {
+                    '_id': {
+                        $nin: [new mongoose.Types.ObjectId(req.session.user._id)]
+                    }
+                }
+            }
+        ]);
+
+        if (users.length === 0) {
+            return res.status(200).send({ success: false, msg: 'No users found!' });
+        }
+
         res.status(200).send({ success: true, data: users });
+
+    } catch (error) {
+        console.error("Error during addMember aggregation:", error);
+        return res.status(500).send({ success: false, msg: error.message });
+    }
+};
+
+
+const saveMember = async function (req, res) {
+    try {
+
+        if (!req.body.members) {
+            res.status(200).send({ success: false, msg: 'Please select at least one Member' });
+        }
+        else {
+            await Member.deleteMany({ group_id: req.body.group_id });
+            var data = [];
+
+            const members = req.body.members;
+
+            for (let i = 0; i < members.length; i++) {
+                data.push({
+                    group_id: req.body.group_id,
+                    user_id: members[i]
+                });
+            }
+
+            await Member.insertMany(data);
+            res.status(200).send({ success: true, msg: 'Members added successfully!' });
+        }
+
 
     } catch (error) {
         res.status(400).send({ success: false, msg: error.message });
@@ -213,7 +282,7 @@ const sendresetpasswordMail = async function (name, email, token) {
             }
             else {
                 console.log("mail has been sent: ", info, res)
-                
+
             }
         });
 
@@ -267,7 +336,7 @@ const resetPassword = async (req, res) => {
             );
             res.render('resetpass', { token: token, message: "Password has been reset successfully." });
         } else {
-            
+
             res.render('resetpass', { token: token, message: "This link has expired or is invalid." });
         }
     } catch (error) {
@@ -285,6 +354,17 @@ const securePassword = async (password) => {
     }
 };
 
+const deleteChatGroup = async (req, res) => {
+    try {
+        await Group.deleteOne({ _id: req.body.id });
+        await Member.deleteMany({ group_id: req.body.id });
+
+        res.status(200).send({ success: true, msg: "Chat Group Deleted successfully!" });
+
+    } catch (error) {
+        res.status(400).send({ success: false, msg: error.message });
+    }
+};
 
 
 module.exports = {
@@ -300,8 +380,10 @@ module.exports = {
     loadGroups,
     createGroups,
     addMember,
+    saveMember,
     forgotPassword,
     LoadforgotPassword,
     resetPassword,
-    loadresetPassword
+    loadresetPassword,
+    deleteChatGroup
 };
