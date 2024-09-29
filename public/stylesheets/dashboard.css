@@ -6,7 +6,6 @@
     border-right: 1px solid #e5e5e5;
     display: flex;
     flex-direction: column;
-    /* Removed justify-content to avoid spacing items at the top and bottom */
 }
 
 /* Sidebar content (e.g., logo and title) */
@@ -18,7 +17,7 @@
 .sidebar nav ul {
     list-style: none;
     padding: 0;
-    margin-top: 1rem; /* Optional: Adds spacing between the logo and nav */
+    margin-top: 1rem;
 }
 
 .sidebar nav ul li {
@@ -26,32 +25,45 @@
 }
 
 /* Sidebar link styling */
-.sidebar nav ul li a {
+.sidebar nav ul li a.sidebar-link {
     display: flex;
     align-items: center;
-    padding: 0.5rem;
+    padding: 0.5rem 1rem;
     text-decoration: none;
     font-size: 1rem;
     color: #333;
     transition: background-color 0.3s ease, color 0.3s ease;
     border-radius: 0.5rem;
+    /* Tailwind-like utility classes */
+    @apply bg-transparent hover:bg-blue-100;
 }
 
 /* Hover effect for links */
-.sidebar nav ul li a:hover {
+.sidebar nav ul li a.sidebar-link:hover {
     background-color: #e2e8f0;
     color: #1a73e8;
 }
 
 /* Icons */
-.sidebar nav ul li a i {
+.sidebar nav ul li a.sidebar-link i {
     margin-right: 0.75rem;
     color: #6c757d;
+    transition: color 0.3s ease;
 }
 
 /* Hover effect for icons */
-.sidebar nav ul li a:hover i {
+.sidebar nav ul li a.sidebar-link:hover i {
     color: #1a73e8;
+}
+
+/* Active Link Styling (Optional) */
+.sidebar nav ul li a.sidebar-link.active {
+    background-color: #1a73e8;
+    color: #ffffff;
+}
+
+.sidebar nav ul li a.sidebar-link.active i {
+    color: #ffffff;
 }
 
 
@@ -243,5 +255,93 @@ border-color: #004085;
         color: #495057;
         opacity: 0.8;
     }
+    
+/* User List Item Styling */
+.group-list-item {
+    padding: 10px;
+    border-bottom: 1px solid #e5e5e5;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.group-list-item:hover {
+    background-color: #e2e8f0; /* Light hover effect */
+}
+
+/* Group Chat Container */
+.group-chat-container {
+    padding: 10px;
+    border-radius: 8px;
+    background: #f9fafb; /* Light background for chat area */
+    max-height: 70vh;
+    overflow-y: auto;
+    margin-top: 10px;
+}
+
+/* Group Start Section */
+.group-start-section {
+    text-align: center;
+    padding: 20px;
+    color: #4a5568; /* Text color for instructions */
+}
+
+/* Group Chat Section Styling */
+.group-chat-section {
+    display: none; /* Hidden by default */
+}
+
+.group-chat-section.active {
+    display: flex; /* Show when active */
+}
+
+/* Message Bubbles */
+.group-chat-container .message {
+    padding: 12px 20px;
+    border-radius: 20px;
+    max-width: 70%;
+    margin: 5px 0;
+}
+
+.group-chat-container .message.sent {
+    background-color: #4299e1; /* Blue background for sent messages */
+    color: #ffffff;
+    align-self: flex-end; /* Align to the right */
+}
+
+.group-chat-container .message.received {
+    background-color: #edf2f7; /* Light gray for received messages */
+    color: #2d3748;
+    align-self: flex-start; /* Align to the left */
+}
+
+/* Input Section Styling */
+#group-chat-form {
+    background: #f7fafc; /* Background for input area */
+    padding: 15px;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Input Field */
+#group-message {
+    width: 85%;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+/* Send Button */
+#group-chat-form button {
+    background-color: #4299e1; /* Blue for send button */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+#group-chat-form button:hover {
+    background-color: #3182ce; /* Darker blue on hover */
+}
 
    

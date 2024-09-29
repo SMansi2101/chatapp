@@ -366,6 +366,65 @@ const deleteChatGroup = async (req, res) => {
     }
 };
 
+const shareGroup = async (req, res) => {
+    try {
+        const groupData = await Group.findOne({ _id: req.params.id });
+
+        if (!groupData) {
+            return res.render('error', { message: '404 Not Found!' });
+        }
+
+        if (!req.session.user) {
+            return res.render('error', { message: 'You need to login to access the share URL!' });
+        }
+
+        const totalMembers = await Member.countDocuments({ group_id: req.params.id });
+
+        const isOwner = groupData.creator_id.toString() === req.session.user._id.toString();
+
+        const isJoined = await Member.countDocuments({ group_id: req.params.id, user_id: req.session.user._id }) > 0;
+
+        res.render('joinGroup', {
+            group: groupData,
+            totalMembers: totalMembers,
+            isOwner: isOwner,
+            isJoined: isJoined
+        });
+
+    } catch (error) {
+        res.status(400).send({ success: false, msg: error.message });
+    }
+};
+
+const joinGroup = async (req, res) => {
+    try {
+        const member = new Member({
+            group_id:req.body.group_id,
+            user_id:req.session.user._id
+        });
+        await member.save();
+        res.send({success:true,msg:'Group Joined!'});
+
+    } catch (error) {
+        res.status(400).send({ success: false, msg: error.message });
+    }
+};
+
+const groupChat = async (req, res) => {
+    try {
+        const myGroups = await Group.find({creator_id:req.session.user._id});
+        const joinedGroups = await Member.find({user_id:req.session.user._id}).populate('group_id');
+
+        res.render('chat-group',{myGroups:myGroups,joinedGroups:joinedGroups});
+
+
+
+    } catch (error) {
+       console.log(error.message)
+    }
+};
+
+
 
 module.exports = {
     registerLoad,
@@ -385,5 +444,8 @@ module.exports = {
     LoadforgotPassword,
     resetPassword,
     loadresetPassword,
-    deleteChatGroup
+    deleteChatGroup,
+    shareGroup,
+    joinGroup,
+    groupChat
 };

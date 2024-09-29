@@ -293,3 +293,109 @@ $('#deleteGroupForm').submit(function(event){
         }
     });
 })
+
+$(document).ready(function() {
+    // Initialize all tooltips
+    $('[data-toggle="tooltip"]').tooltip({
+        trigger: 'manual' // We will control when to show/hide
+    });
+
+    // Handle "Copy" button click
+    $('.copy').click(function() {
+        var group_id = $(this).attr('data-id');
+        var $this = $(this); 
+
+        const url = `${window.location.protocol}//${window.location.host}/share-group/${group_id}`;
+
+        // Attempt to copy the URL to clipboard
+        if (navigator.clipboard && window.isSecureContext) {
+
+            navigator.clipboard.writeText(url).then(function () {
+                $this.attr('data-original-title', 'Copied!').tooltip('show');
+
+                setTimeout(function() {
+                    $this.tooltip('hide');
+                }, 2000);
+            }, function(err) {
+                console.error('Could not copy text: ', err);
+                $this.attr('data-original-title', 'Failed to copy!').tooltip('show');
+                setTimeout(function() {
+                    $this.tooltip('hide');
+                }, 2000);
+            });
+        } else {
+           
+            var temp = $('<input>');
+            $("body").append(temp);
+            temp.val(url).select();
+            var successful = document.execCommand("copy");
+            temp.remove();
+
+            if (successful) {
+                $this.attr('data-original-title', 'Copied!').tooltip('show');
+            } else {
+                $this.attr('data-original-title', 'Failed to copy!').tooltip('show');
+            }
+
+            setTimeout(function() {
+                $this.tooltip('hide');
+            }, 2000);
+        }
+    });
+});
+
+$('.join-now').click(function(){
+    var $button = $(this);  
+    $button.text('wait...');  
+    $button.attr('disabled', 'disabled');  
+
+    var group_id = $button.attr('data-id');
+
+    $.ajax({
+        url: '/join-group',
+        method: 'POST',
+        data: { group_id: group_id },
+        success: function(res){
+     
+            showNotification(res.msg, res.success ? 'bg-green-500' : 'bg-red-500');
+            
+            if(res.success){
+                setTimeout(function() {
+                    location.reload();  
+                }, 1500);
+            }
+            else{
+                $button.text('Join Group').removeAttr('disabled');  
+            }
+        },
+        error: function() {
+            showNotification('Something went wrong! Please try again.', 'bg-red-500');
+            $button.text('Join Group').removeAttr('disabled');  
+        }
+    });
+});
+
+// Function to show notification with animation
+function showNotification(message, colorClass) {
+    var $notification = $('#notification');
+    $notification.removeClass().addClass(`fixed bottom-5 right-5 ${colorClass} text-white text-center py-3 px-6 rounded-lg shadow-lg opacity-0 pointer-events-none transition duration-500 ease-in-out z-50`);
+
+
+    $('#notification-message').text(message);
+    $notification.removeClass('opacity-0 pointer-events-none').addClass('opacity-100 translate-y-0');
+
+    setTimeout(function(){
+        $notification.addClass('opacity-0 pointer-events-none');
+    }, 3000);
+}
+
+$(document).ready(function () {
+    // Bind click event to group list items
+    $('#groupList').on('click', '.group-list-item', function () {
+        var groupId = $(this).attr('data-id'); // Get the clicked group's data-id
+        selectedGroupId = groupId; // Set selectedGroupId
+        document.querySelector('.group-start-section').style.display = 'none'; // Hide the start section
+        document.querySelector('.group-chat-section').style.display = 'flex'; // Show the group chat section
+       
+    });
+});

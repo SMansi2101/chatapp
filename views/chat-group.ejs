@@ -1,0 +1,60 @@
+<%- include('partials/header') %>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6">
+        <h1 class="text-2xl font-bold mb-4">Group Chatting</h1>
+        <div class="grid grid-cols-12 gap-6">
+            <!--Group List Section -->
+            <div class="col-span-3 bg-gray-100 p-4 rounded-lg shadow">
+                <ul id="groupList">
+                    <% if (myGroups.length > 0) { %>
+                        <% for (let i = 0; i < myGroups.length; i++) { %>
+                            <li class="group-list-item rounded flex items-center" data-id="<%= myGroups[i]['_id'] %>">
+                                <img src="<%= myGroups[i]['image'] %>" class="w-12 h-12 rounded-full mr-4">
+                                <%= myGroups[i]['name'] %>
+                            </li>
+                        <% } %>
+                    <% } else { %>
+                        <li class="text-gray-600">No Groups.</li>
+                    <% } %>
+            
+                    <!-- Show joined Groups -->
+                    <% if (joinedGroups.length > 0) { %>
+                        <% for (let i = 0; i < joinedGroups.length; i++) { %>
+                            <li class="group-list-item rounded flex items-center" data-id="<%= joinedGroups[i]['group_id']['_id'] %>">
+                                <img src="<%= joinedGroups[i]['group_id']['image'] %>" class="w-12 h-12 rounded-full mr-4">
+                                <%= joinedGroups[i]['group_id']['name'] %>
+                            </li>
+                        <% } %>
+                    <% } else { %>
+                        <li class="text-gray-600">No Joined Groups.</li>
+                    <% } %>
+                </ul>
+            </div>
+
+            <!-- Chat Section -->
+            <div class="col-span-9 flex flex-col bg-white rounded-lg shadow h-[calc(100vh-96px)]">
+                <h3 class="group-start-section p-4">Click to start the chat</h3>
+
+                <div class="group-chat-section flex flex-col flex-1 p-4">
+                    <!-- Chat messages container -->
+                    <div class="group-chat-container flex flex-col flex-1 overflow-y-auto p-4 bg-gray-200 rounded-lg space-y-2"
+                        id="group-chat-container">
+                        <!-- Chat messages will appear here -->
+                    </div>
+
+                    <!-- Message input form -->
+                    <form action="" id="group-chat-form"
+                        class="mt-4 flex-shrink-0 flex items-center space-x-4 bg-gray-50 p-4 rounded-lg">
+                        <input type="text" name="message" id="group-message" placeholder="Enter Message"
+                            class="flex-1 border rounded-lg p-2 focus:outline-none" required>
+                        <button type="submit"
+                            class="btn btn-primary bg-blue-500 text-white px-4 py-2 rounded-lg">Send</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+<%- include('partials/footer') %>

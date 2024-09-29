@@ -1,0 +1,31 @@
+<%- include('partials/header') %>
+
+<!-- Notification Container -->
+<div id="notification" class="fixed bottom-5 right-5 bg-blue-500 text-white text-center py-3 px-6 rounded-lg shadow-lg opacity-0 pointer-events-none transition duration-500 ease-in-out z-50">
+    <span id="notification-message"></span>
+</div>
+
+<div class="container mx-auto px-4 py-10">
+    <div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6 flex flex-col items-center">
+        <img src="/<%= group.image %>" alt="Group Image" class="w-32 h-32 rounded-full object-cover mb-4">
+        <h2 class="text-2xl font-semibold mb-2"><%= group.name %></h2>
+        <p class="text-gray-600 mb-4">Total Members: <span class="font-medium"><%= totalMembers %></span></p>
+        
+        <% if (isOwner) { %>
+            <div class="mb-4">
+                <p class="text-green-600 font-medium">You are the owner of this group.</p>
+            </div>
+        <% } else if (isJoined) { %>
+            <div class="mb-4">
+                <p class="text-blue-600 font-medium">You are already a member of this group.</p>
+            </div>
+        <% } else { %>
+            
+                <button type="submit" class="join-now bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition duration-300" data-id="<%= group._id %>">Join Group</button>
+        <% } %>
+        
+        <a href="/dashboard" class="text-blue-500 hover:underline">Back to Dashboard</a>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
