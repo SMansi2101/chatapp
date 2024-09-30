@@ -55,6 +55,13 @@ router.post('/join-group',userController.joinGroup);
 
 router.get('/group-chat',auth.isLogin,userController.groupChat);
 
+router.post('/group-chat-save',auth.isLogin,userController.SaveGroupChat);
+
+router.post('/load-group-chat',userController.loadGroupChats);
+
+router.post('/delete-group-chat',userController.deleteGroupChats);
+
+
 
 
 

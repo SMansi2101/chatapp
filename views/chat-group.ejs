@@ -7,27 +7,23 @@
             <!--Group List Section -->
             <div class="col-span-3 bg-gray-100 p-4 rounded-lg shadow">
                 <ul id="groupList">
-                    <% if (myGroups.length > 0) { %>
+                    <% if (myGroups && myGroups.length > 0) { %>
                         <% for (let i = 0; i < myGroups.length; i++) { %>
-                            <li class="group-list-item rounded flex items-center" data-id="<%= myGroups[i]['_id'] %>">
-                                <img src="<%= myGroups[i]['image'] %>" class="w-12 h-12 rounded-full mr-4">
-                                <%= myGroups[i]['name'] %>
+                            <li class="group-list-item rounded flex items-center" data-id="<%= myGroups[i]._id %>">
+                                <img src="<%= myGroups[i].image %>" class="w-12 h-12 rounded-full mr-4 object-cover">
+                                <%= myGroups[i].name %>
                             </li>
                         <% } %>
-                    <% } else { %>
-                        <li class="text-gray-600">No Groups.</li>
                     <% } %>
-            
+                    
                     <!-- Show joined Groups -->
-                    <% if (joinedGroups.length > 0) { %>
+                    <% if (joinedGroups && joinedGroups.length > 0) { %>
                         <% for (let i = 0; i < joinedGroups.length; i++) { %>
-                            <li class="group-list-item rounded flex items-center" data-id="<%= joinedGroups[i]['group_id']['_id'] %>">
-                                <img src="<%= joinedGroups[i]['group_id']['image'] %>" class="w-12 h-12 rounded-full mr-4">
-                                <%= joinedGroups[i]['group_id']['name'] %>
+                            <li class="group-list-item rounded flex items-center" data-id="<%= joinedGroups[i].group_id._id %>">
+                                <img src="<%= joinedGroups[i].group_id.image %>" class="w-12 h-12 rounded-full mr-4 object-cover">
+                                <%= joinedGroups[i].group_id.name %>
                             </li>
                         <% } %>
-                    <% } else { %>
-                        <li class="text-gray-600">No Joined Groups.</li>
                     <% } %>
                 </ul>
             </div>
@@ -55,6 +51,34 @@
             </div>
         </div>
     </div>
+
+     <!--Delete Modal -->
+     <!-- Modal -->
+<div class="modal fade" id="deleteGroupChatModal" tabindex="-1" role="dialog" aria-labelledby="deleteGroupChatTitle"
+aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="deleteGroupChatTitle">LinkUp</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <form id="delete-group-chat-form">
+            <div class="modal-body">
+                <input type="hidden" name="id" id="group-delete-message-id">
+                <p>Delete group message?</p>
+                <p><b id="group-delete-message"></b></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
 
     
 <%- include('partials/footer') %>

@@ -66,6 +66,14 @@ usp.on('connection', async function (socket) {
   socket.on('chatEdited', function (data) {
     socket.broadcast.emit('chatMessageEdited', data);
   });
+
+  socket.on('newgroupChat', function (data) {
+    socket.broadcast.emit('loadNewGroupChat', data);
+  });
+
+  socket.on('groupChatDeleted', function (id) {
+    socket.broadcast.emit('groupChatMsgDeleted', id);
+  });
 });
 
 // Use session middleware

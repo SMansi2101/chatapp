@@ -1,8 +1,8 @@
 function getCookie(name) {
-	let matches = document.cookie.match(new RegExp(
-		"(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-	));
-	return matches ? decodeURIComponent(matches[1]) : undefined;
+    let matches = document.cookie.match(new RegExp(
+        "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
 };
 
 
@@ -10,13 +10,14 @@ const userData = JSON.parse(getCookie('user'));
 
 const sender_id = userData._id;
 let receiver_id = null;
+let global_group_id;
 const socket = io('/user-namespace', {
     auth: {
         token: userData._id
     }
 });
 
-$(document).ready(function() {
+$(document).ready(function () {
     // Bind click event to user list items
     $('#userList').on('click', '.user-list-item', function () {
         var userId = $(this).attr('data-id'); // Get the clicked user's data-id
@@ -209,101 +210,101 @@ socket.on('chatMessageEdited', function (data) {
     $('#' + data.id).find('span').text(data.message);
 });
 
-$('.addMember').click(function(){
-    var id  = $(this).attr('data-id');
-    var limit  = $(this).attr('data-limit');
-     
+$('.addMember').click(function () {
+    var id = $(this).attr('data-id');
+    var limit = $(this).attr('data-limit');
+
     $('#group_id').val(id);
     $('#limit').val(limit);
 
     $.ajax({
-        url:'/add-member',
-        type:'POST',
-        data:{group_id:id},
-        success:function(res){
-        
-             if(res.success == true){
+        url: '/add-member',
+        type: 'POST',
+        data: { group_id: id },
+        success: function (res) {
+
+            if (res.success == true) {
                 let users = res.data;
                 let html = '';
 
-                for(let i=0; i < users.length; i++){
-                  let isMemberOfGroup = users[i]['member'].length > 0?true:false;
-                html +=`
+                for (let i = 0; i < users.length; i++) {
+                    let isMemberOfGroup = users[i]['member'].length > 0 ? true : false;
+                    html += `
                    <tr>
                       <td>
-                       <input type="checkbox" `+(isMemberOfGroup?'checked':'')+` name="members[]" value="${users[i]['_id']}" />
+                       <input type="checkbox" `+ (isMemberOfGroup ? 'checked' : '') + ` name="members[]" value="${users[i]['_id']}" />
                       </td>
                       <td>${users[i]['name']}</td>
                    </tr>
                 `;
                 }
                 $('.addMemberTable').html(html);
-             }
-             else{
+            }
+            else {
                 alert(res.msg);
-             }
+            }
         }
     });
 });
 //save member form submit code
 
-$('#add-member-form').submit(function(event){
+$('#add-member-form').submit(function (event) {
     event.preventDefault();
 
     var formData = $(this).serialize();
 
     $.ajax({
-        url:"/save-member",
-        type:"POST",
-        data:formData,
-        success:function(res){
-          if(res.success){
-            alert(res.msg);
-            $('#addMemberModal').modal('hide');
-            $('#add-member-form')[0].reset();
-          }
-          else{
-            alert(res.msg);
-          }
+        url: "/save-member",
+        type: "POST",
+        data: formData,
+        success: function (res) {
+            if (res.success) {
+                alert(res.msg);
+                $('#addMemberModal').modal('hide');
+                $('#add-member-form')[0].reset();
+            }
+            else {
+                alert(res.msg);
+            }
         }
     });
 });
 
 //delete chat group
 
-$('.deleteGroup').click(function(){
+$('.deleteGroup').click(function () {
     $('#delete_group_id').val($(this).attr('data-id'));
     $('#delete_group_name').text($(this).attr('data-name'));
 });
 
-$('#deleteGroupForm').submit(function(event){
+$('#deleteGroupForm').submit(function (event) {
     event.preventDefault();
 
     var formData = $(this).serialize();
 
     $.ajax({
-        url:"/delete-chat-group",
-        type:'POST',
-        data:formData,
-        success:function(res){
+        url: "/delete-chat-group",
+        type: 'POST',
+        data: formData,
+        success: function (res) {
             alert(res.msg);
-            if(res.success){
+            if (res.success) {
                 location.reload();
             }
         }
     });
 })
 
-$(document).ready(function() {
+$(document).ready(function () {
     // Initialize all tooltips
     $('[data-toggle="tooltip"]').tooltip({
         trigger: 'manual' // We will control when to show/hide
     });
 
     // Handle "Copy" button click
-    $('.copy').click(function() {
+    $('.copy').click(function () {
         var group_id = $(this).attr('data-id');
-        var $this = $(this); 
+        var $this = $(this);
 
         const url = `${window.location.protocol}//${window.location.host}/share-group/${group_id}`;
 
@@ -313,18 +314,18 @@ $(document).ready(function() {
             navigator.clipboard.writeText(url).then(function () {
                 $this.attr('data-original-title', 'Copied!').tooltip('show');
 
-                setTimeout(function() {
+                setTimeout(function () {
                     $this.tooltip('hide');
                 }, 2000);
-            }, function(err) {
+            }, function (err) {
                 console.error('Could not copy text: ', err);
                 $this.attr('data-original-title', 'Failed to copy!').tooltip('show');
-                setTimeout(function() {
+                setTimeout(function () {
                     $this.tooltip('hide');
                 }, 2000);
             });
         } else {
-           
+
             var temp = $('<input>');
             $("body").append(temp);
             temp.val(url).select();
@@ -337,17 +338,17 @@ $(document).ready(function() {
                 $this.attr('data-original-title', 'Failed to copy!').tooltip('show');
             }
 
-            setTimeout(function() {
+            setTimeout(function () {
                 $this.tooltip('hide');
             }, 2000);
         }
     });
 });
 
-$('.join-now').click(function(){
-    var $button = $(this);  
-    $button.text('wait...');  
-    $button.attr('disabled', 'disabled');  
+$('.join-now').click(function () {
+    var $button = $(this);
+    $button.text('wait...');
+    $button.attr('disabled', 'disabled');
 
     var group_id = $button.attr('data-id');
 
@@ -355,22 +356,22 @@ $('.join-now').click(function(){
         url: '/join-group',
         method: 'POST',
         data: { group_id: group_id },
-        success: function(res){
-     
+        success: function (res) {
+
             showNotification(res.msg, res.success ? 'bg-green-500' : 'bg-red-500');
-            
-            if(res.success){
-                setTimeout(function() {
-                    location.reload();  
+
+            if (res.success) {
+                setTimeout(function () {
+                    location.reload();
                 }, 1500);
             }
-            else{
-                $button.text('Join Group').removeAttr('disabled');  
+            else {
+                $button.text('Join Group').removeAttr('disabled');
             }
         },
-        error: function() {
+        error: function () {
             showNotification('Something went wrong! Please try again.', 'bg-red-500');
-            $button.text('Join Group').removeAttr('disabled');  
+            $button.text('Join Group').removeAttr('disabled');
         }
     });
 });
@@ -384,18 +385,146 @@ function showNotification(message, colorClass) {
     $('#notification-message').text(message);
     $notification.removeClass('opacity-0 pointer-events-none').addClass('opacity-100 translate-y-0');
 
-    setTimeout(function(){
+    setTimeout(function () {
         $notification.addClass('opacity-0 pointer-events-none');
     }, 3000);
 }
 
+function ScrollGroupChat() {
+    $('#group-chat-container').animate({
+        scrollTop: $('#group-chat-container').offset().top + $('#group-chat-container')[0].scrollHeight
+    }, 0);
+};
+
+
 $(document).ready(function () {
-    // Bind click event to group list items
+
     $('#groupList').on('click', '.group-list-item', function () {
-        var groupId = $(this).attr('data-id'); // Get the clicked group's data-id
-        selectedGroupId = groupId; // Set selectedGroupId
-        document.querySelector('.group-start-section').style.display = 'none'; // Hide the start section
-        document.querySelector('.group-chat-section').style.display = 'flex'; // Show the group chat section
-       
+
+        document.querySelector('.group-start-section').style.display = 'none';
+        document.querySelector('.group-chat-section').style.display = 'flex';
+
+        global_group_id = $(this).attr('data-id');
+
+        loadGroupChats();
+
     });
+});
+
+$('#group-chat-form').submit(function (event) {
+    event.preventDefault();
+
+    const message = $('#group-message').val();
+
+    $.ajax({
+        url: '/group-chat-save',
+        type: 'POST',
+        data: { sender_id: sender_id, group_id: global_group_id, message: message },
+        success: function (response) {
+            if (response.success) {
+                $('#group-message').val('');
+                let message = response.chat.message;
+                let html = `
+                    <div class="current-user-chat"id="`+ response.chat._id + `">
+                        <h5>
+                           <span>`+ message + `</span> 
+                            <i class="fa-solid fa-trash-can deletegroupchat" data-id="` + response.chat._id + `" data-toggle="modal" data-target="#deleteGroupChatModal"></i>
+                        </h5>
+                    </div>
+                `;
+                $('#group-chat-container').append(html);
+                socket.emit('newgroupChat', response.data);
+
+                ScrollGroupChat();
+            } else {
+                alert(response.msg);
+            }
+        }
+    });
+});
+socket.on('loadNewGroupChat', function (data) {
+    if (global_group_id == data.group_id) {
+        let html = `
+        <div class="distance-user-chat"id="`+ data._id + `">
+            <h5>
+               <span>`+ data.message + `</span> 
+               
+            </h5>
+        </div>
+    `;
+        $('#group-chat-container').append(html);
+
+
+        ScrollGroupChat();
+    }
+});
+
+function loadGroupChats() {
+    $.ajax({
+        url: '/load-group-chat',
+        type: 'POST',
+        data: { group_id: global_group_id },
+        success: function (response) {
+            if (response.success) {
+                const chats = response.chats;
+                let html = '';
+                for (let i = 0; i < chats.length; i++) {
+                    let className = 'distance-user-chat';
+                    if (chats[i].sender_id == sender_id) {
+                        className = 'current-user-chat';
+                    }
+                    html += `
+                        <div class="${className}" id="${chats[i]._id}">
+                            <h5>
+                         <span>${chats[i].message}</span>`
+                    if (chats[i].sender_id == sender_id) {
+                       html+=` <i class="fa-solid fa-trash-can deletegroupchat"
+                          data-id="${chats[i]._id}" data-toggle="modal" 
+                          data-target="#deleteGroupChatModal"></i>`;
+                    }
+                    html+=`
+                      </h5 >
+                     </div >
+                            `;
+                }
+                $('#group-chat-container').html(html);
+
+                ScrollGroupChat();
+            } else {
+                alert(response.msg);
+            }
+        }
+    });
+};
+
+$(document).on('click','.deletegroupchat',function(){
+    var msg = $(this).parent().find('span').text();
+
+    $('#group-delete-message').text(msg);
+    $('#group-delete-message-id').val($(this).attr('data-id'));
+})
+
+$('#delete-group-chat-form').submit(function(e){
+    e.preventDefault();
+
+    var id = $('#group-delete-message-id').val();
+
+    $.ajax({
+        url:"/delete-group-chat",
+        type:'POST',
+        data:{id:id},
+        success:function(response){
+            if(response.success){
+              $('#'+id).remove();
+              $('#deleteGroupChatModal').modal('hide');
+              socket.emit('groupChatDeleted',id);
+            }else{
+                alert(response.msg);
+            }
+        }
+    })
+})
+
+socket.on('groupChatMsgDeleted',function(id){
+    $('#'+id).remove();
 });

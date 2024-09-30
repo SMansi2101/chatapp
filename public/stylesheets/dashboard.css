@@ -35,7 +35,7 @@
     transition: background-color 0.3s ease, color 0.3s ease;
     border-radius: 0.5rem;
     /* Tailwind-like utility classes */
-    @apply bg-transparent hover:bg-blue-100;
+
 }
 
 /* Hover effect for links */

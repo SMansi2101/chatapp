@@ -3,6 +3,7 @@ const Chat = require('../models/chatModel');
 const User = require('../models/userModel');
 const Group = require('../models/groupModel');
 const Member = require('../models/memberModel');
+const GroupChat = require('../models/groupChatModel');
 const randomstring = require('randomstring');
 const nodemailer = require('nodemailer')
 const config = require('../config/config');
@@ -424,7 +425,42 @@ const groupChat = async (req, res) => {
     }
 };
 
+const SaveGroupChat = async (req, res) => {
+    try {
+        const groupChat = new GroupChat({
+            sender_id:req.body.sender_id,
+            group_id:req.body.group_id,
+            message:req.body.message
+        });
 
+        var newgroupChat = await groupChat.save();
+        res.send({success:true,chat:newgroupChat});
+
+    } catch (error) {
+       console.log(error.message)
+    }
+};
+
+const loadGroupChats = async (req, res) => {
+    try {
+        const groupChats = await GroupChat.find({group_id:req.body.group_id});
+        res.send({success:true,chats:groupChats});
+
+    } catch (error) {
+       console.log({msg:error.message});
+       res.send({ success: false, msg: error.message });
+    }
+};
+
+const deleteGroupChats = async (req, res) => {
+    try {
+      await GroupChat.deleteOne({_id:req.body.id});
+      res.send({success:true});
+
+    } catch (error) {
+       res.send({ success: false, msg: error.message });
+    }
+};
 
 module.exports = {
     registerLoad,
@@ -447,5 +483,8 @@ module.exports = {
     deleteChatGroup,
     shareGroup,
     joinGroup,
-    groupChat
+    groupChat,
+    SaveGroupChat,
+    loadGroupChats,
+    deleteGroupChats
 };
