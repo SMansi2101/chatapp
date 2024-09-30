@@ -265,15 +265,18 @@ const sendresetpasswordMail = async function (name, email, token) {
             }
         });
 
+        // Use your deployed app's URL instead of localhost
+        const resetUrl = `https://chatapp-3efc.onrender.com/reset-password/${token}`;
+
         const mailOptions = {
             to: email,
-            from: process.env.EMAIL_USER, // Sender's email
+            from: process.env.EMAIL_USER, 
             subject: 'LinkUp Password Reset',
             html: `
                 <p>Hello ${name},</p>
                 <p>You are receiving this email because you requested a password reset for your account.</p>
                 <p>Please click the following link to reset your password:</p>
-                <p><a href="http://localhost:3000/reset-password/${token}" style="color: #018fed; text-decoration: none;">Reset Password</a></p>
+                <p><a href="${resetUrl}" style="color: #018fed; text-decoration: none;">Reset Password</a></p>
             `
         };
 
@@ -282,8 +285,7 @@ const sendresetpasswordMail = async function (name, email, token) {
                 console.log(error);
             }
             else {
-                console.log("mail has been sent: ", info, res)
-
+                console.log("mail has been sent: ", info)
             }
         });
 
@@ -291,6 +293,7 @@ const sendresetpasswordMail = async function (name, email, token) {
         console.log("Error in sending mail:", error.message);
     }
 };
+
 
 const forgotPassword = async function (req, res) {
     try {
