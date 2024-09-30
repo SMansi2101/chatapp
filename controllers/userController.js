@@ -443,7 +443,7 @@ const SaveGroupChat = async (req, res) => {
 
 const loadGroupChats = async (req, res) => {
     try {
-        const groupChats = await GroupChat.find({group_id:req.body.group_id});
+        const groupChats = await GroupChat.find({group_id:req.body.group_id}).populate('sender_id');
         res.send({success:true,chats:groupChats});
 
     } catch (error) {

@@ -343,5 +343,67 @@ border-color: #004085;
 #group-chat-form button:hover {
     background-color: #3182ce; /* Darker blue on hover */
 }
+/* Container for each message row */
+.chat-row {
+    display: flex; /* Align image and message side by side */
+    align-items: flex-start; /* Align image and message to the top */
+    margin-bottom: 8px; /* Add smaller spacing between messages */
+}
 
-   
+/* Image Styling */
+.user-chat-image {
+    width: 35px; /* Image size */
+    height: 35px; /* Maintain aspect ratio */
+    border-radius: 50%; /* Round shape */
+    margin-right: 10px; /* Space between image and message box */
+}
+
+/* Independent message container */
+.message-container {
+    max-width: 60%; /* Limit width */
+    padding: 6px 10px; /* Reduce padding */
+    border-radius: 10px; /* Rounded corners */
+    background-color: #878787; /* Light gray background */
+    position: relative; /* Keep position for delete icon */
+}
+
+/* Different color for current user's messages */
+.current-user-chat {
+    background-color: #0c66ba; /* Light green for current user's message */
+    color: #ffffff; /* White text color */
+    max-width: 60%;
+    padding: 6px 10px;
+    border-radius: 10px;
+    position: relative;
+}
+
+/* Username styling */
+.user-name {
+    font-size: 0.7rem; /* Smaller username text */
+    font-weight: 600; /* Slightly bold */
+    color: #000000; /* Dark text color */
+    margin-bottom: 3px; /* Smaller gap between name and message */
+}
+
+/* Message text styling */
+.message-text {
+    font-size: 0.8rem; /* Smaller message text */
+    color: #ffffff; /* Neutral text color */
+    word-wrap: break-word; /* Wrap text if too long */
+}
+
+/* Styling for delete icon container */
+.delete-group-chat-container {
+    text-align: right; /* Align the icon to the right */
+    margin-top: 4px; /* Space above the delete button */
+}
+
+/* Styling for delete icon */
+.deletegroupchat {
+    cursor: pointer;
+    color: #e74c3c;
+    font-size: 0.85rem; /* Adjusted size for icon */
+}
+
+/* Styling for messages sent by the current user */
+

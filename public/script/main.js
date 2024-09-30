@@ -470,36 +470,53 @@ function loadGroupChats() {
                 let html = '';
                 for (let i = 0; i < chats.length; i++) {
                     let className = 'distance-user-chat';
-                    if (chats[i].sender_id == sender_id) {
+                    if (chats[i]['sender_id']._id == sender_id) {
                         className = 'current-user-chat';
                     }
-                    html += `
-                        <div class="${className}" id="${chats[i]._id}">
-                            <h5>
-                         <span>${chats[i].message}</span>`
-                    if (chats[i].sender_id == sender_id) {
-                       html+=` <i class="fa-solid fa-trash-can deletegroupchat"
-                          data-id="${chats[i]._id}" data-toggle="modal" 
-                          data-target="#deleteGroupChatModal"></i>`;
+
+                    // Construct each message row
+                    html += `<div class="chat-row">`;
+
+                    // Only show image for other users' messages
+                    if (chats[i]['sender_id']._id !== sender_id) {
+                        html += `<img src="${chats[i]['sender_id'].image}" class="user-chat-image" alt="User Image"/>`;
                     }
-                    html+=`
-                      </h5 >
-                     </div >
-                            `;
+
+                    // Construct the message box and content
+                    html += `
+                            <div class="message-container ${className}" id="${chats[i]._id}">`;
+
+                    // Show the username only for other users' messages
+                    if (chats[i]['sender_id']._id !== sender_id) {
+                        html += `<div class="user-name">${chats[i]['sender_id'].name}</div>`;
+                    }
+
+                    // Display the message content
+                    html += `<div class="message-text">${chats[i].message}</div>`;
+
+                    // Add delete option only for the current user's messages and place it below the message
+                    if (chats[i]['sender_id']._id == sender_id) {
+                        html += `<div class="delete-group-chat-container">
+                                    <i class="fa-solid fa-trash-can deletegroupchat"
+                                    data-id="${chats[i]._id}" data-toggle="modal" 
+                                    data-target="#deleteGroupChatModal"></i>
+                                </div>`;
+                    }
+
+                    html += `</div></div>`; // Close message-container and chat-row
                 }
                 $('#group-chat-container').html(html);
-
                 ScrollGroupChat();
             } else {
                 alert(response.msg);
             }
         }
     });
-};
+}
 
 $(document).on('click','.deletegroupchat',function(){
     var msg = $(this).parent().find('span').text();
-
+   
     $('#group-delete-message').text(msg);
     $('#group-delete-message-id').val($(this).attr('data-id'));
 })
@@ -516,6 +533,7 @@ $('#delete-group-chat-form').submit(function(e){
         success:function(response){
             if(response.success){
               $('#'+id).remove();
+              $('#user-chat-image').remove();
               $('#deleteGroupChatModal').modal('hide');
               socket.emit('groupChatDeleted',id);
             }else{
