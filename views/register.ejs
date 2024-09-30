@@ -20,6 +20,8 @@
             padding: 10px 20px;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 1;
+            transition: opacity 0.5s ease-out;
         }
 
         @keyframes slideIn {
@@ -85,8 +87,23 @@
         </form>
 
         <% if (typeof message != 'undefined') { %>
-            <div class="message"><%= message %></div>
+            <div class="message" id="message"><%= message %></div>
         <% } %>
     </div>
+
+    <script>
+        // Function to remove the message after a few seconds
+        const messageElement = document.getElementById('message');
+        if (messageElement) {
+            setTimeout(() => {
+                // Fade out the message
+                messageElement.style.opacity = '0';
+                // Remove it from the DOM after the transition
+                setTimeout(() => {
+                    messageElement.remove();
+                }, 500); // Match this duration with the CSS transition time
+            }, 3000); // Show the message for 3 seconds
+        }
+    </script>
 </body>
 </html>
