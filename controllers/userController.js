@@ -6,7 +6,7 @@ const Member = require('../models/memberModel');
 const GroupChat = require('../models/groupChatModel');
 const randomstring = require('randomstring');
 const nodemailer = require('nodemailer')
-const config = require('../config/config');
+// const config = require('../config/config');
 const mongoose = require('mongoose');
 
 const registerLoad = async function (req, res) {
@@ -260,14 +260,14 @@ const sendresetpasswordMail = async function (name, email, token) {
             secure: false,
             requireTLS: true,
             auth: {
-                user: config.emailUser,
-                pass: config.emailPassword
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASSWORD
             }
         });
 
         const mailOptions = {
             to: email,
-            from: config.emailUser, // Sender's email
+            from: process.env.EMAIL_USER, // Sender's email
             subject: 'LinkUp Password Reset',
             html: `
                 <p>Hello ${name},</p>
