@@ -236,7 +236,7 @@ const saveMember = async function (req, res) {
             }
 
             await Member.insertMany(data);
-            res.status(200).send({ success: true, msg: 'Members added successfully!' });
+            res.status(200).send({ success: true, msg: 'Members Updated successfully!' });
         }
 
 

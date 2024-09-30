@@ -59,15 +59,9 @@ router.post('/group-chat-save',auth.isLogin,userController.SaveGroupChat);
 
 router.post('/load-group-chat',userController.loadGroupChats);
 
-router.post('/delete-group-chat',userController.deleteGroupChats);
-
-
-
-
-
-router.get('*',function(req,res){
-  res.redirect('/');
-})
+router.get('/', function (req, res) {
+  res.render('index');  
+});
 
 
 module.exports = router;

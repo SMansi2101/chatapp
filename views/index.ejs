@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to LinkUp</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Fade-in animation */
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1.5s forwards;
+        }
+        
+        @keyframes fadeIn {
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Slide-in animation for heading */
+        .slide-in {
+            opacity: 0;
+            transform: translateY(-20px); /* Start slightly above */
+            animation: slideIn 1s forwards;
+        }
+
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scale effect on hover for buttons */
+        .btn-hover:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Animated effect for LinkUp */
+        .linkup-animation {
+            display: inline-block;
+            font-weight: bold;
+            color: #333; /* Dark gray color */
+            animation: scaleUp 1.5s infinite alternate;
+        }
+
+        @keyframes scaleUp {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Subtle background gradient */
+        .bg-gradient {
+            background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+        }
+
+        /* Card shadow */
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="bg-gradient min-h-screen flex items-center justify-center">
+
+    <!-- Main Content Card -->
+    <div class="bg-white rounded-lg p-8 max-w-md w-full text-center fade-in card">
+        <!-- Slide-in Animated Heading -->
+        <h1 class="text-4xl slide-in mb-4">
+            Welcome to <span class="text-blue-600 linkup-animation">LinkUp</span>
+        </h1>
+        <p class="text-md text-gray-600 mb-6">
+            A simple chat platform for real-time communication. Connect with friends and colleagues effortlessly.
+        </p>
+
+        <!-- Buttons for Login and Register -->
+        <div class="space-x-4">
+            <a href="/login" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full btn-hover transition-transform duration-300">
+                Login
+            </a>
+            <a href="/register" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-6 rounded-full btn-hover transition-transform duration-300">
+                Register
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

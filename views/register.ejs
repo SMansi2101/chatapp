@@ -5,6 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LinkUp - Register</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Animation for the message */
+        .message {
+            animation: slideIn 0.5s forwards;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background-color: #d1fae5; /* Light green background */
+            color: #065f46; /* Dark green text */
+            border: 1px solid #4ade80; /* Green border */
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+    </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
     <!-- Registration Form Container -->
@@ -56,14 +84,9 @@
             </div>
         </form>
 
-        <%
-           if(typeof message != 'undefined'){
-            %>
-            <p style="color: green;"><%= message %></p>
-            <%
-           }
-         %>
+        <% if (typeof message != 'undefined') { %>
+            <div class="message"><%= message %></div>
+        <% } %>
     </div>
-
 </body>
 </html>
