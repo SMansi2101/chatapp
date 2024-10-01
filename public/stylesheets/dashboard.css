@@ -76,16 +76,19 @@
 .user-list-item:hover {
     background-color: #f0f0f0;
 }
-
+/* Chat container height */
 .chat-container {
     overflow-y: auto;
-    max-height: calc(100vh - 160px);
+    max-height: calc(100vh - 160px); /* Adjust the height calculation if needed */
+    padding-right: 10px; /* Prevent content overflow on scroll */
 }
 
+/* Hide chat section initially */
 .chat-section {
     display: none;
 }
 
+/* User status styles */
 .online-status {
     color: green;
 }
@@ -94,33 +97,38 @@
     color: red;
 }
 
+/* Message styling for current user */
 .current-user-chat {
     background-color: #007bff;
     color: white;
     padding: 10px;
     border-radius: 10px;
-    max-width: 60%;
+    max-width: 60%; /* Limit message width to avoid overflow */
     word-wrap: break-word;
-    align-self: flex-end;
-    /* Align to the right */
-    text-align: right;
-    /* Align text to the right */
-    margin-left: auto;
-    /* Push to the right */
+    word-break: break-word; /* Ensure text breaks properly */
+    align-self: flex-end; /* Align to the right */
+    text-align: left; /* Change text alignment */
+    margin-left: auto; /* Keep on the right side */
+    margin-bottom: 8px; /* Add space between messages */
+    overflow-wrap: anywhere; /* Allow breaking in long words */
 }
 
+/* Message styling for other users */
 .distance-user-chat {
     background-color: #ffffff;
     color: black;
     padding: 10px;
     border-radius: 10px;
-    max-width: 60%;
+    max-width: 60%; /* Limit message width */
     word-wrap: break-word;
-    align-self: flex-start;
-    /* Align to the left */
-    margin-right: auto;
-    /* Push to the left */
+    word-break: break-word; /* Break text properly */
+    align-self: flex-start; /* Align to the left */
+    text-align: left; /* Keep left text alignment */
+    margin-right: auto; /* Keep to the left side */
+    margin-bottom: 8px; /* Add space between messages */
+    overflow-wrap: anywhere; /* Allow breaking in long words */
 }
+
 
 .fa-trash-can {
     color: red;

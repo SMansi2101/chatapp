@@ -34,6 +34,36 @@
                 transform: translateX(-50%) translateY(0);
             }
         }
+
+        /* Custom styling for the file upload */
+        .custom-file-upload {
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-file-upload input[type="file"] {
+            display: none;
+        }
+
+        .custom-file-upload button {
+            background-color: #4b5563; /* Gray background */
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .custom-file-upload button:hover {
+            background-color: #1e40af; /* Blue background on hover */
+        }
+
+        .file-name {
+            color: #4b5563; /* Dark gray */
+            font-style: italic;
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
@@ -65,10 +95,14 @@
                 <input type="password" id="password" name="password" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-400" required placeholder="Create a password">
             </div>
 
-            <!-- Profile Image Upload -->
+            <!-- Custom Profile Image Upload -->
             <div class="mb-6">
                 <label class="block text-gray-600">Upload Profile Image</label>
-                <input type="file" name="image" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none">
+                <div class="custom-file-upload">
+                    <button type="button" id="uploadButton">Choose File</button>
+                    <span class="file-name" id="fileName">No file chosen</span>
+                    <input type="file" id="fileUpload" name="image" accept="image/*">
+                </div>
             </div>
 
             <!-- Register Button -->
@@ -92,17 +126,33 @@
     </div>
 
     <script>
+        // Function to update the file name label
+        const fileUpload = document.getElementById('fileUpload');
+        const fileName = document.getElementById('fileName');
+        const uploadButton = document.getElementById('uploadButton');
+
+        uploadButton.addEventListener('click', () => {
+            fileUpload.click();
+        });
+
+        fileUpload.addEventListener('change', (event) => {
+            const selectedFile = event.target.files[0];
+            if (selectedFile) {
+                fileName.textContent = selectedFile.name;
+            } else {
+                fileName.textContent = 'No file chosen';
+            }
+        });
+
         // Function to remove the message after a few seconds
         const messageElement = document.getElementById('message');
         if (messageElement) {
             setTimeout(() => {
-                // Fade out the message
                 messageElement.style.opacity = '0';
-                // Remove it from the DOM after the transition
                 setTimeout(() => {
                     messageElement.remove();
-                }, 500); // Match this duration with the CSS transition time
-            }, 3000); // Show the message for 3 seconds
+                }, 500);
+            }, 3000);
         }
     </script>
 </body>

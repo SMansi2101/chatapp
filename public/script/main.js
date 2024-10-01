@@ -433,7 +433,7 @@ $('#group-chat-form').submit(function (event) {
                     </div>
                 `;
                 $('#group-chat-container').append(html);
-                socket.emit('newgroupChat', response.data);
+                socket.emit('newgroupChat', response.chat);
 
                 ScrollGroupChat();
             } else {
@@ -444,20 +444,47 @@ $('#group-chat-form').submit(function (event) {
 });
 socket.on('loadNewGroupChat', function (data) {
     if (global_group_id == data.group_id) {
-        let html = `
-        <div class="distance-user-chat"id="`+ data._id + `">
-            <h5>
-               <span>`+ data.message + `</span> 
-               
-            </h5>
-        </div>
-    `;
+        let className = 'distance-user-chat';
+        let html = `<div class="chat-row">`;
+
+        // Check if the sender is the current user
+        if (data.sender_id._id === sender_id) {
+            className = 'current-user-chat';
+        }
+
+        // Only show image for other users' messages
+        if (data.sender_id._id !== sender_id) {
+            html += `<img src="${data.sender_id.image}" class="user-chat-image" alt="User Image"/>`;
+        }
+
+        // Construct the message container
+        html += `
+            <div class="message-container ${className}" id="${data._id}">`;
+
+        // Show the username only for other users' messages
+        if (data.sender_id._id !== sender_id) {
+            html += `<div class="user-name">${data.sender_id.name}</div>`;
+        }
+
+        // Display the message content
+        html += `<div class="message-text">${data.message}</div>`;
+
+        // Add delete option only for the current user's messages
+        if (data.sender_id._id === sender_id) {
+            html += `<div class="delete-group-chat-container">
+                        <i class="fa-solid fa-trash-can deletegroupchat"
+                        data-id="${data._id}" data-toggle="modal" 
+                        data-target="#deleteGroupChatModal"></i>
+                     </div>`;
+        }
+
+        html += `</div></div>`; // Close message-container and chat-row
+
         $('#group-chat-container').append(html);
-
-
         ScrollGroupChat();
     }
 });
+
 
 function loadGroupChats() {
     $.ajax({
